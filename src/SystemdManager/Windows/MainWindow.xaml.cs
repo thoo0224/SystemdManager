@@ -41,8 +41,6 @@ public partial class MainWindow : AdonisWindow
 
     private async void OpenConnection()
     {
-        Cursor = Cursors.Wait;
-
         try
         {
             OpenConnectionButton.IsEnabled = false;
@@ -71,13 +69,12 @@ public partial class MainWindow : AdonisWindow
                 });
             });
         }
-        catch
+        catch(Exception e)
         {
-            // TODO: Handle exception
+            ShowConnectionFailedDialog(e);
         }
         finally
         {
-            Cursor = Cursors.Arrow;
             OpenConnectionButton.IsEnabled = true;
         }
     }
@@ -190,6 +187,7 @@ public partial class MainWindow : AdonisWindow
         SelectedServerPasswordBox.Password = _serverView.SelectedServer.Password;
     }
 
+    // TODO: Check if exception is a connection exception, if not handle it in an other method
     private void ShowConnectionFailedDialog(Exception exception = null)
     {
         Dispatcher.Invoke(() =>
