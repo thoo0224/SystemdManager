@@ -160,7 +160,7 @@ public partial class MainWindow : AdonisWindow
         OpenConnection();
     }
 
-    private void ServerSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void DataGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
     {
         UpdatePasswordBox();
     }
@@ -182,6 +182,11 @@ public partial class MainWindow : AdonisWindow
 
     private void UpdatePasswordBox()
     {
+        if (_serverView.SelectedServer == null)
+        {
+            return;
+        }
+
         SelectedServerPasswordBox.Password = _serverView.SelectedServer.Password;
     }
 

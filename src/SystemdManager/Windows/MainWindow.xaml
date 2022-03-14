@@ -61,9 +61,9 @@
                         ItemsSource="{Binding Servers}"
                         Loaded="ServerList_OnLoaded"
                         MouseDoubleClick="ServerListItem_OnDoubleClick"
+                        SelectedCellsChanged="DataGrid_OnSelectedCellsChanged"
                         SelectedIndex="0"
                         SelectedItem="{Binding SelectedServer, Mode=TwoWay}"
-                        SelectionChanged="ServerSelector_OnSelectionChanged"
                         SelectionMode="Single">
                         <DataGrid.Columns>
                             <DataGridTemplateColumn
