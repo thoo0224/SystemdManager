@@ -53,13 +53,13 @@
                     BorderThickness="1"
                     CornerRadius="1">
                     <DataGrid
-                        Loaded="ServerList_OnLoaded"
                         AllowDrop="False"
                         AutoGenerateColumns="false"
                         BorderThickness="0"
                         CanUserAddRows="False"
                         CanUserDeleteRows="False"
                         ItemsSource="{Binding Servers}"
+                        Loaded="ServerList_OnLoaded"
                         MouseDoubleClick="ServerListItem_OnDoubleClick"
                         SelectedIndex="0"
                         SelectedItem="{Binding SelectedServer, Mode=TwoWay}"
@@ -156,7 +156,7 @@
                                 Content="Test Connection" />
                         </StackPanel>
                     </TabItem>
-                    <TabItem Header="SSL" />
+                    <TabItem Header="SSL" IsEnabled="False" />
                 </TabControl>
 
                 <StackPanel
