@@ -3,7 +3,6 @@
 using Renci.SshNet;
 
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,7 +23,6 @@ namespace SystemdManager.Windows;
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
-///  TODO: Loader method to execute code in a thread with the loading cursor
 public partial class MainWindow : AdonisWindow
 {
 
