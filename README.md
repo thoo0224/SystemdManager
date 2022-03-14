@@ -1,7 +1,7 @@
 <div align="center">
-# SystemdManager
+    # Systemd Manager
 
-Tool to easily manage your systemd services.
+    Tool to easily manage your systemd services.
 </div>
 
 ### Images
