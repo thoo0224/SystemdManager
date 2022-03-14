@@ -15,9 +15,9 @@ using SystemdManager.Objects;
 using SystemdManager.Services;
 using SystemdManager.ViewModels;
 
-using MessageBox = AdonisUI.Controls.MessageBox;
-using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
-using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
+using AdonisMessageBox = AdonisUI.Controls.MessageBox;
+using AdonisMessageBoxButton = AdonisUI.Controls.MessageBoxButton;
+using AdonisMessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 
 namespace SystemdManager;
 
@@ -48,7 +48,7 @@ public partial class App : Application
         Current.Dispatcher.Invoke(() =>
         {
             var exc = (Exception) e.ExceptionObject;
-            MessageBox.Show($"Exception: {exc.Message}", "Unhandled Exception", MessageBoxButton.OK, MessageBoxImage.Error);
+            AdonisMessageBox.Show($"Exception: {exc.Message}", "Unhandled Exception", AdonisMessageBoxButton.OK, AdonisMessageBoxImage.Error);
         });
     }
 
