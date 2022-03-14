@@ -1,0 +1,58 @@
+﻿<?xml version="1.0"?>
+<SyntaxDefinition name="INI" extensions=".ini" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+	<Color name="Comment" foreground="Green" />
+	<Color name="Bracket" foreground="#89DDFF" />
+	<Color name="Section" foreground="Orange" fontWeight="bold" />
+	<Color name="Key" foreground="#FFCB6B" />
+	<Color name="Equal" foreground="#89DDFF" />
+	<Color name="TrueFalse" foreground="DarkCyan" />
+	<Color name="NumberLiteral" foreground="DarkBlue" />
+	<Color name="Error" foreground="Red" />
+	<Color name="Text" foreground="#C3E88D" />
+
+	<RuleSet>
+		<Span begin="#" color="Comment" />
+		<Span begin="^[^=]*?(?=\[)" color="Error" >
+			<RuleSet>
+				<Span begin="\[" end="" color="Bracket" />
+				<Span begin="]" end="" color="Bracket" />
+				<Span begin=".+?(?=])" end="" color="Section" />
+			</RuleSet>
+		</Span>
+
+		<Span begin="^\s*=" color="Error" />
+		<Span begin="^(?!.*=).+$" color="Error" />
+		<Span begin="^[^\[]*?(?==)" color="Key">
+			<RuleSet>
+				<Span begin="=" color="Equal">
+					<RuleSet>
+						<Rule color="Text">.</Rule>
+					</RuleSet>
+				</Span>
+			</RuleSet>
+		</Span>
+
+	</RuleSet>
+
+
+	<RuleSet name="TrueFalse" ignoreCase="true">
+		<Keywords color="TrueFalse">
+			<Word>true</Word>
+			<Word>false</Word>
+		</Keywords>
+	</RuleSet>
+
+	<RuleSet name="NumberLiteral">
+		<Keywords color="NumberLiteral">
+			<Word>NaN</Word>
+		</Keywords>
+		<Rule color="NumberLiteral">
+			\b0[xX][0-9a-fA-F]+  # hex number
+			|    \b
+			(    \d+(\.[0-9]+)?   #number with optional floating point
+			|    \.[0-9]+         #or just starting with floating point
+			)
+			([eE][+-]?[0-9]+)? # optional exponent
+		</Rule>
+	</RuleSet>
+</SyntaxDefinition>
