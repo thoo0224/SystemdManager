@@ -63,6 +63,7 @@
                         MouseDoubleClick="ServerListItem_OnDoubleClick"
                         SelectedIndex="0"
                         SelectedItem="{Binding SelectedServer, Mode=TwoWay}"
+                        SelectionChanged="ServerSelector_OnSelectionChanged"
                         SelectionMode="Single">
                         <DataGrid.Columns>
                             <DataGridTemplateColumn

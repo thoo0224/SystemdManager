@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 using SystemdManager.Objects;
@@ -128,16 +129,17 @@ public partial class MainWindow : AdonisWindow
         }
     }
 
-    private void CreateButton_OnClick(object sender, RoutedEventArgs e)
+    private async void CreateButton_OnClick(object sender, RoutedEventArgs e)
     {
         var server = Server.CreateDefault();
         _serverView.Servers.Add(server);
         _serverView.SelectedServer = server;
 
         SelectedServerNameTextBox.Focus();
+        await Task.Factory.StartNew(() => _serverView.SaveServersAsync());
     }
 
-    private void DeleteServerButton_OnClick(object sender, RoutedEventArgs e)
+    private async void DeleteServerButton_OnClick(object sender, RoutedEventArgs e)
     {
         var selectedServer = _serverView.SelectedServer;
         var result = MessageBox.Show(
@@ -150,6 +152,7 @@ public partial class MainWindow : AdonisWindow
 
         _serverView.Servers.Remove(selectedServer);
         _serverView.SelectedServer = _serverView.Servers.FirstOrDefault();
+        await Task.Factory.StartNew(() => _serverView.SaveServersAsync());
     }
 
     private void OpenButton_OnClick(object sender, RoutedEventArgs e)
@@ -157,21 +160,9 @@ public partial class MainWindow : AdonisWindow
         OpenConnection();
     }
 
-    private async void SaveButton_OnClick(object sender, RoutedEventArgs e)
+    private void ServerSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        Cursor = Cursors.Wait;
-        try
-        {
-            await Task.Factory.StartNew(() => _serverView.SaveServersAsync());
-        }
-        catch
-        {
-            // TODO: Handle exception
-        }
-        finally
-        {
-            Cursor = Cursors.Arrow;
-        }
+        UpdatePasswordBox();
     }
 
     private void SelectedServerPasswordBox_OnPasswordChanged(object sender, RoutedEventArgs e)
@@ -180,6 +171,16 @@ public partial class MainWindow : AdonisWindow
     }
 
     private void ServerList_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        UpdatePasswordBox();
+    }
+
+    private async void SaveButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        await Task.Factory.StartNew(() => _serverView.SaveServersAsync());
+    }
+
+    private void UpdatePasswordBox()
     {
         SelectedServerPasswordBox.Password = _serverView.SelectedServer.Password;
     }
