@@ -74,7 +74,9 @@ public partial class App : Application
 
     private void SetupLogger()
     {
+#if DEBUG
         AllocConsole();
+#endif
 
         var applicationDataDirectory = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         _applicationView.ApplicationDataPath = Path.Combine(applicationDataDirectory, "SystemdManager");
@@ -84,9 +86,11 @@ public partial class App : Application
             .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
             .MinimumLevel.Override("System", LogEventLevel.Warning)
             .Enrich.FromLogContext()
+#if DEBUG
             .WriteTo.Console(
                 theme: AnsiConsoleTheme.Code,
                 outputTemplate: "[{Timestamp:G}] [{Level:u3}] {Message:l}{NewLine}")
+#endif
             .WriteTo.File(
                 path: Path.Combine(_applicationView.ApplicationDataPath, "logs", "log_.txt"),
                 rollingInterval: RollingInterval.Day,
