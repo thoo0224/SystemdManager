@@ -6,7 +6,7 @@ A tool to easily manage and create services.
 <img src="./assets/server.png" width=550>
 
 ### Features
- - ~~Service controls (start, stop, restart)~~
+ - ~~Service Controls (start, stop, restart)~~
  - ~~SSH Keys~~
  - ~~Live Console~~
  - ~~Create Services~~
