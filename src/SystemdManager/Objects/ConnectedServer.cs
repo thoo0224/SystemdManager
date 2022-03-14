@@ -8,13 +8,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
 
 using SystemdManager.Framework;
-using SystemdManager.Services;
 using SystemdManager.UnitParser;
-using SystemdManager.ViewModels;
 
 namespace SystemdManager.Objects;
 
@@ -37,20 +34,19 @@ public class ConnectedServer : ViewModel
         set => SetProperty(ref _services, value);
     }
 
-    private readonly ServerViewModel _serverView;
     private readonly SshClient _sshClient;
     private readonly SftpClient _sftpClient;
 
+    // TODO: Separate SSH and SFTP configuration
     public ConnectedServer(Server server)
     {
         Server = server;
 
-        _serverView = ApplicationService.ApplicationView.ServerView;
         _sshClient = new SshClient(server.Host, server.Port, server.User, server.Password);
         _sftpClient = new SftpClient(_sshClient.ConnectionInfo);
     }
 
-    // TODO: Add the systemd directory(s) in the settings
+    // TODO: Add custom systemd directory(s) in the settings
     // TODO: Add file watchers (if possible, if not, periodically check the file content)
     public void LoadServices()
     {
@@ -96,6 +92,8 @@ public class ConnectedServer : ViewModel
 
     public void SaveService(Service service, string content)
     {
+        Log.Information("Saving service: {ServiceName}",
+            service.FullName);
         _sftpClient.DeleteFile(service.FullName);
         _sftpClient.WriteAllText(service.FullName, content);
     }
@@ -116,6 +114,7 @@ public class ConnectedServer : ViewModel
         {
             _sshClient.Connect();
             _sftpClient.Connect();
+
             sw.Stop();
             if (!_sshClient.IsConnected)
             {
