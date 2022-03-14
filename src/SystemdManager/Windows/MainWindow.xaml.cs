@@ -13,11 +13,6 @@ using SystemdManager.Objects;
 using SystemdManager.Services;
 using SystemdManager.ViewModels;
 
-using MessageBox = AdonisUI.Controls.MessageBox;
-using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
-using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
-using MessageBoxResult = AdonisUI.Controls.MessageBoxResult;
-
 namespace SystemdManager.Windows;
 
 /// <summary>
