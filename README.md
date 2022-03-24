@@ -1,5 +1,6 @@
 # SystemD Manager
 A tool to easily manage and create services.
+NOTE: This application is not stable yet, it can have bugs!
 
 ### Images
 <img src="./assets/servers.png" width=400>
@@ -14,6 +15,7 @@ A tool to easily manage and create services.
  - Console
  - Configuration Visualizer
  - Configuration Editor
+ - Comments
 
 ### Contribution
 Any type of contribution is much appreciated!
