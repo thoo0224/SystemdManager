@@ -100,7 +100,7 @@ public class ConnectedServer : ViewModel
 
     public string LoadServiceJournal(Service service)
     {
-        var commandResult = _sshClient.RunCommand($"journalctl -u {service.Name} -b");
+        var commandResult = _sshClient.RunCommand($"journalctl -u {service.Name} -b --no-pager -n 100000");
         return commandResult.Result;
     }
 
