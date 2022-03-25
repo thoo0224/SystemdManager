@@ -5,7 +5,7 @@ namespace SystemdManager.UnitParser;
 public class UnitFileParser
 {
 
-    private static readonly Regex PropertyRegex = new(@"(.*)=(.*)", RegexOptions.Compiled, TimeSpan.FromSeconds(2));
+    private static readonly Regex PropertyRegex = new(@"([^=]+)=(.*)", RegexOptions.Compiled, TimeSpan.FromSeconds(2));
 
     private readonly string[] _content;
 
