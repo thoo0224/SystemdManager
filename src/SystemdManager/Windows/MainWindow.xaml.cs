@@ -35,7 +35,7 @@ public partial class MainWindow : AdonisWindow
         {
             OpenConnectionButton.IsEnabled = false;
             var selected = _serverView.SelectedServer;
-            await Task.Factory.StartNew(() =>
+            await Task.Factory.StartNew(async () =>
             {
                 if (!ValidateServerInformation(selected))
                 {
@@ -43,20 +43,17 @@ public partial class MainWindow : AdonisWindow
                 }
 
                 var connectedServer = new ConnectedServer(selected);
-                if (!connectedServer.Connect(out var ex))
+                try
                 {
-                    ShowConnectionFailedDialog(ex);
+                    connectedServer.ConnectAsync();
+                }
+                catch (Exception e)
+                {
+                    ShowConnectionFailedDialog(e);
                     return;
                 }
 
-                Dispatcher.Invoke(() =>
-                {
-                    _serverView.ConnectedServer = connectedServer;
-                    var serverWindow = new ServerWindow();
-                    serverWindow.Show();
-
-                    Close();
-                });
+                await OpenServerWindowAsync(connectedServer);
             });
         }
         catch(Exception e)
@@ -67,6 +64,20 @@ public partial class MainWindow : AdonisWindow
         {
             OpenConnectionButton.IsEnabled = true;
         }
+    }
+
+    private async Task OpenServerWindowAsync(ConnectedServer server)
+    {
+        await Dispatcher.InvokeAsync(async () =>
+        {
+            _serverView.ConnectedServer = server;
+
+            var serverWindow = new ServerWindow();
+            await serverWindow.LoadServices();
+
+            serverWindow.Show();
+            Close();
+        });
     }
 
     private void ServerListItem_OnDoubleClick(object sender, MouseButtonEventArgs e)

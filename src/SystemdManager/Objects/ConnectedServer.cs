@@ -92,33 +92,22 @@ public class ConnectedServer : ViewModel
         return commandResult.Result;
     }
 
-    public bool Connect(out Exception exception)
+    public void ConnectAsync()
     {
         Log.Information("Connecting with SSH & SFTP");
         var sw = new Stopwatch();
         sw.Start();
 
-        try
-        {
-            _sshClient.Connect();
-            _sftpClient.Connect();
+        _sshClient.Connect();
+        _sftpClient.Connect();
 
-            sw.Stop();
-            if (!_sshClient.IsConnected)
-            {
-                exception = null;
-                return false;
-            }
-        }
-        catch(Exception e)
+        sw.Stop();
+        if (!_sshClient.IsConnected || !_sftpClient.IsConnected)
         {
-            exception = e;
-            return false;
+            throw new Exception("Failed to connect to sftp or ssh.");
         }
 
-        exception = null;
         Log.Information("Successfully connected in {Elapsed}", sw.Elapsed);
-        return true;
     }
 
     public void RefreshService(ref Service service)
