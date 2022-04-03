@@ -38,7 +38,6 @@ public class ConnectedServer : ViewModel
 
     private readonly SshClient _sshClient;
     private readonly SftpClient _sftpClient;
-    private readonly SemaphoreSlim _lock;
 
     // TODO: Separate SSH and SFTP configuration
     public ConnectedServer(Server server)
@@ -47,12 +46,11 @@ public class ConnectedServer : ViewModel
 
         _sshClient = new SshClient(server.Host, server.Port, server.User, server.Password);
         _sftpClient = new SftpClient(_sshClient.ConnectionInfo);
-        _lock = new SemaphoreSlim(Environment.ProcessorCount);
     }
 
     // TODO: Add custom systemd directory(s) in the settings
     // TODO: Add file watchers (if possible, if not, periodically check the file content)
-    public async void LoadServices()
+    public async Task LoadServices()
     {
         Log.Information("Loading services...");
         var sw = new Stopwatch();
