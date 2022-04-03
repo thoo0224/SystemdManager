@@ -1,4 +1,5 @@
-﻿using AdonisUI.Controls;
+﻿using System.Threading.Tasks;
+using AdonisUI.Controls;
 
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
@@ -31,10 +32,14 @@ public partial class ServerWindow : AdonisWindow
         LoadAvalonHighlighter();
     }
 
+    public async Task LoadServices()
+    {
+        await _serverView.ConnectedServer.LoadServices();
+    }
+
     private void Window_OnLoaded(object sender, RoutedEventArgs e)
     {
         Title = $"Systemd Manager - {_serverView.ConnectedServer.Server.Name}";
-        _serverView.ConnectedServer.LoadServices();
         RawTextEditor.TextArea.TextEntered += RawTextEditor_OnTextEntered;
     }
 
