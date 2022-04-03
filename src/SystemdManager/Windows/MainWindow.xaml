@@ -65,6 +65,7 @@
                         SelectedIndex="0"
                         SelectedItem="{Binding SelectedServer, Mode=TwoWay}"
                         SelectionMode="Single">
+                        
                         <DataGrid.Columns>
                             <DataGridTemplateColumn
                                 Width="100"

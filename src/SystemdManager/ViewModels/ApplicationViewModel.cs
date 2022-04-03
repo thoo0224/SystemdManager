@@ -5,7 +5,7 @@ using SystemdManager.Services;
 
 namespace SystemdManager.ViewModels;
 
-public class ApplicationViewModel : ViewModel
+public class ApplicationViewModel
 {
 
     public ServerViewModel ServerView { get; set; } = new();

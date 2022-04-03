@@ -15,9 +15,6 @@ using SystemdManager.ViewModels;
 
 namespace SystemdManager.Windows;
 
-/// <summary>
-/// Interaction logic for MainWindow.xaml
-/// </summary>
 public partial class MainWindow : AdonisWindow
 {
 
@@ -145,10 +142,7 @@ public partial class MainWindow : AdonisWindow
         await Task.Factory.StartNew(() => _serverView.SaveServersAsync());
     }
 
-    private void OpenButton_OnClick(object sender, RoutedEventArgs e)
-    {
-        OpenConnection();
-    }
+    private void OpenButton_OnClick(object sender, RoutedEventArgs e) => OpenConnection();
 
     private void DataGrid_OnSelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
     {
@@ -199,8 +193,11 @@ public partial class MainWindow : AdonisWindow
         {
             if (showMessageBox)
             {
-                MessageBox.Show("Please make sure you entered the host, username and password.", "Invalid input",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    MessageBox.Show("Please make sure you entered the host, username and password.", "Invalid input",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                });
             }
             return false;
         }

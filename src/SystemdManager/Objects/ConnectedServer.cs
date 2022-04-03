@@ -9,7 +9,9 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
+using SystemdManager.Ext;
 using SystemdManager.Framework;
 using SystemdManager.UnitParser;
 
@@ -36,6 +38,7 @@ public class ConnectedServer : ViewModel
 
     private readonly SshClient _sshClient;
     private readonly SftpClient _sftpClient;
+    private readonly SemaphoreSlim _lock;
 
     // TODO: Separate SSH and SFTP configuration
     public ConnectedServer(Server server)
@@ -44,11 +47,12 @@ public class ConnectedServer : ViewModel
 
         _sshClient = new SshClient(server.Host, server.Port, server.User, server.Password);
         _sftpClient = new SftpClient(_sshClient.ConnectionInfo);
+        _lock = new SemaphoreSlim(Environment.ProcessorCount);
     }
 
     // TODO: Add custom systemd directory(s) in the settings
     // TODO: Add file watchers (if possible, if not, periodically check the file content)
-    public void LoadServices()
+    public async void LoadServices()
     {
         Log.Information("Loading services...");
         var sw = new Stopwatch();
@@ -56,32 +60,18 @@ public class ConnectedServer : ViewModel
 
         var serviceFiles = _sftpClient.ListDirectory("/etc/systemd/system").ToList();
         var processors = Environment.ProcessorCount;
-        var processorChunks = serviceFiles.Chunk(processors).ToList();
-        var threads = new List<Thread>(processors);
         var services = new List<Service>();
-        foreach (var chunk in processorChunks)
+
+        await serviceFiles.ForEachAsync(processors, file =>
         {
-            var thread = new Thread(() =>
+            var service = LoadService(file);
+            if (service == null)
             {
-                foreach (var serviceFile in chunk)
-                {
-                    var service = LoadService(serviceFile);
-                    if (service == null)
-                    {
-                        continue;
-                    }
+                return;
+            }
 
-                    services.Add(service);
-                }
-            });
-            thread.Start();
-            threads.Add(thread);
-        }
-
-        foreach (var thread in threads)
-        {
-            thread.Join();
-        }
+            services.Add(service);
+        });
 
         Services = new ObservableCollection<Service>(services);
         sw.Stop();
@@ -143,6 +133,9 @@ public class ConnectedServer : ViewModel
 
     private Service LoadService(string name, string fullName)
     {
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
+
         if (!fullName.EndsWith(".service"))
         {
             return null;
@@ -163,6 +156,9 @@ public class ConnectedServer : ViewModel
         var statusCommandResult = _sshClient.RunCommand($"systemctl -l status {service.Name}");
         var status = new ServiceStatus(statusCommandResult.Result);
         service.Status = status;
+
+        stopwatch.Stop();
+        Log.Information("{Filename} took {time}ms to load!", name, stopwatch.ElapsedMilliseconds);
 
         return service;
     }
