@@ -2,27 +2,25 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace SystemdManager.Ext
+namespace SystemdManager.Ext;
+
+public static class TaskExtensions
 {
-    public static class TaskExtensions
+
+    public static Task ForEachAsync<T>(this IEnumerable<T> source, int processors, Action<T> body)
     {
-
-        public static Task ForEachAsync<T>(this IEnumerable<T> source, int processors, Action<T> body)
+        var partition = Partitioner.Create(source).GetPartitions(processors);
+        var tasks = partition.Select(x => Task.Run(() =>
         {
-            var partition = Partitioner.Create(source).GetPartitions(processors);
-            var tasks = partition.Select(x => Task.Run(() =>
+            while (x.MoveNext())
             {
-                while (x.MoveNext())
-                {
-                    body(x.Current);
-                }
-            }));
+                body(x.Current);
+            }
+        }));
 
-            return Task.WhenAll(tasks);
-        }
-
+        return Task.WhenAll(tasks);
     }
+
 }
