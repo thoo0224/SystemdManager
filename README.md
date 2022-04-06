@@ -1,5 +1,5 @@
 # SystemD Manager
-A tool to easily manager, create and view all your systemd services.
+A tool to easily manage, create and view all your systemd services.
 
 ### Features
  - ~~Service Controls (start, stop, restart)~~
