@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,10 +23,9 @@ public class ServiceStatus
             .Where(x => x.Length >= 2)
             .Select(x =>
             {
-                var key = x[0].ToLower();
-                var keyLastIndex = key.LastIndexOf(' ') + 1;
+                var key = x[0].ToLower().TrimStart(' ');
 
-                return new KeyValuePair<string, string>(key[keyLastIndex..], x[1]);
+                return new KeyValuePair<string, string>(key, x[1]);
             }).ToList();
 
         var activeEntry = GetEntry(entries, "active");
