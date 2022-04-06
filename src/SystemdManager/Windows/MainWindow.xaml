@@ -65,7 +65,7 @@
                         SelectedIndex="0"
                         SelectedItem="{Binding SelectedServer, Mode=TwoWay}"
                         SelectionMode="Single">
-                        
+
                         <DataGrid.Columns>
                             <DataGridTemplateColumn
                                 Width="100"
@@ -116,8 +116,7 @@
 
             </Grid>
 
-            <!--  TODO: One grid for all the buttons on the bottom & Fix background  -->
-            <!--  TODO: Copy the selected server, and make a dialog for saving changes  -->
+            <!--  TODO: Action to copy a server & Confirmation prompt when the user makes any changes  -->
             <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
@@ -136,7 +135,10 @@
                                 Margin="0,0,0,5"
                                 adonisExt:WatermarkExtension.Watermark="Host / IP"
                                 Text="{Binding SelectedServer.Host, Mode=TwoWay}" />
-                            <CheckBox Margin="0,0,0,10" Content="Prompt for credentials" />
+                            <CheckBox
+                                Margin="0,0,0,10"
+                                Content="Prompt for credentials"
+                                IsEnabled="False" />
 
                             <TextBox
                                 Margin="0,0,0,5"
