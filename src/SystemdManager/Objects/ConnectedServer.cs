@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 using SystemdManager.Ext;
 using SystemdManager.Framework;
-using SystemdManager.UnitParser;
 
 namespace SystemdManager.Objects;
 
@@ -55,7 +54,8 @@ public class ConnectedServer : ViewModel
         Log.Information("Loading services...");
         var sw = new Stopwatch();
         sw.Start();
-
+ 
+        // todo: maybe to do this with ssh? & multiple paths
         var serviceFiles = _sftpClient.ListDirectory("/etc/systemd/system").ToList();
         var processors = Environment.ProcessorCount;
         var services = new List<Service>();
@@ -128,19 +128,17 @@ public class ConnectedServer : ViewModel
             return null;
         }
 
-        var content = _sftpClient.ReadAllText(fullName);
-        var lines = content.Split("\n");
-        var parser = new UnitFileParser(lines);
-        var systemdService = parser.Parse();
+        var command = _sshClient.RunCommand($"cat {fullName}");
+        var content = command.Result;
+
         var service = new Service
         {
             FullName = fullName,
             Name = name,
-            Raw = content,
-            Sections = systemdService.Sections
+            Content = content
         };
 
-        var statusCommandResult = _sshClient.RunCommand($"systemctl -l status {service.Name}");
+        var statusCommandResult = _sshClient.RunCommand($"systemctl -l -n 0 status {service.Name}");
         var status = new ServiceStatus(statusCommandResult.Result);
         service.Status = status;
 

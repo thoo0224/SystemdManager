@@ -21,7 +21,7 @@ public class SaveRawServiceCommand : ViewModelCommand<ServerViewModel>
         server.RefreshService(ref service);
 
         var oldCaretPosition = avalonEdit.TextArea.Caret.Position;
-        avalonEdit.Text = service.Raw;
+        avalonEdit.Text = service.Content;
         avalonEdit.TextArea.Caret.Position = oldCaretPosition;
 
         contextViewModel.EditorTabItemHeader = "Editor";

@@ -1,7 +1,5 @@
-﻿using ICSharpCode.AvalonEdit;
-
+﻿
 using SystemdManager.Framework;
-using SystemdManager.Windows;
 
 namespace SystemdManager.ViewModels.Commands;
 
@@ -13,20 +11,21 @@ public class SaveVisualizedServiceCommand : ViewModelCommand<ServerViewModel>
 
     public override void Execute(ServerViewModel contextViewModel, object parameter)
     {
-        var window = (ServerWindow) parameter;
-        var avalonEdit = window.RawTextEditor;
-        var server = contextViewModel.ConnectedServer;
-        var service = server.SelectedService;
-        var newContent = service.Serialize();
+        // TODO
+        //var window = (ServerWindow) parameter;
+        //var avalonEdit = window.RawTextEditor;
+        //var server = contextViewModel.ConnectedServer;
+        //var service = server.SelectedService;
+        //var newContent = service.Serialize();
 
-        server.SaveService(service, newContent);
-        server.RefreshService(ref service);
+        //server.SaveService(service, newContent);
+        //server.RefreshService(ref service);
 
-        var oldCaretPosition = avalonEdit.TextArea.Caret.Position;
-        avalonEdit.Text = service.Raw;
-        avalonEdit.TextArea.Caret.Position = oldCaretPosition;
+        //var oldCaretPosition = avalonEdit.TextArea.Caret.Position;
+        //avalonEdit.Text = service.Content;
+        //avalonEdit.TextArea.Caret.Position = oldCaretPosition;
 
-        contextViewModel.EditorTabItemHeader = "Editor";
+        //contextViewModel.EditorTabItemHeader = "Editor";
     }
 
 }

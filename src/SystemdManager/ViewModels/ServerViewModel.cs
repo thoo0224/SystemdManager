@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -15,6 +14,7 @@ namespace SystemdManager.ViewModels;
 public class ServerViewModel : ViewModel
 {
 
+    // TODO: make this better lol, worst way of doing this
     private string _editorTabItemHeader = "Editor";
     public string EditorTabItemHeader
     {

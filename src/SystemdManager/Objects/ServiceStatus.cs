@@ -1,5 +1,4 @@
-﻿using Serilog;
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,17 +18,31 @@ public class ServiceStatus
             return;
         }
 
-        var lines = commandResult.Split("\n");
-        var line = FindSectionValue(lines, "Active");
+        var entries = commandResult
+            .Split("\n")
+            .Select(x => x.Split(": "))
+            .Where(x => x.Length >= 2)
+            .Select(x =>
+            {
+                var key = x[0].ToLower();
+                var value = x[1].ToLower();
+                var keyLastIndex = key.LastIndexOf(' ') + 1;
 
-        IsActive = line.StartsWith("active (running)");
+                return new KeyValuePair<string, string>(key[keyLastIndex..], value);
+            }).ToList();
+
+        var activeEntry = GetEntry(entries, "active");
+        IsActive = activeEntry.StartsWith("active");
         if (!IsActive)
         {
             return;
         }
 
-        MemoryUsage = FindSectionValue(lines, "Memory");
+        MemoryUsage = GetEntry(entries, "memory"); // TODO: Parsing this to ByteSize
     }
+
+    private string GetEntry(IEnumerable<KeyValuePair<string, string>> source, string key)
+        => source.FirstOrDefault(x => x.Key.Equals(key, StringComparison.CurrentCultureIgnoreCase)).Value;
 
     private string FindSectionValue(IEnumerable<string> lines, string section)
     {

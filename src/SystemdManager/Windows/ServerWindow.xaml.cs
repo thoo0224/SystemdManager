@@ -55,7 +55,7 @@ public partial class ServerWindow : AdonisWindow
         if (service == null)
             return;
 
-        RawTextEditor.Text = service.Raw;
+        RawTextEditor.Text = service.Content;
         ConsoleTextArea.Text = _serverView.ConnectedServer.LoadServiceJournal(service);
         ConsoleTextArea.ScrollToEnd();
     }

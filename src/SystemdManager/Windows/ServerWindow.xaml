@@ -9,7 +9,6 @@
     xmlns:local="clr-namespace:SystemdManager.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:services="clr-namespace:SystemdManager.Services"
-    xmlns:unitParser="clr-namespace:SystemdManager.UnitParser;assembly=SystemdManager.UnitParser"
     xmlns:viewModels="clr-namespace:SystemdManager.ViewModels"
     Title="Systemd Manager"
     Width="1200"
@@ -50,20 +49,34 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <ListBox
-                    BorderBrush="{DynamicResource {x:Static adonis:Brushes.Layer1BorderBrush}}"
-                    BorderThickness="1"
-                    ItemsSource="{Binding ConnectedServer.Services}"
-                    SelectedIndex="0"
-                    SelectedItem="{Binding ConnectedServer.SelectedService}"
-                    SelectionChanged="ServiceList_SelectionChanged"
-                    SelectionMode="Single">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Name}" />
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                <!--  SERVICES  -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="5" />
+                        <RowDefinition Height="35" />
+                    </Grid.RowDefinitions>
+
+                    <ListBox
+                        BorderBrush="{DynamicResource {x:Static adonis:Brushes.Layer1BorderBrush}}"
+                        BorderThickness="1"
+                        ItemsSource="{Binding ConnectedServer.Services}"
+                        SelectedIndex="0"
+                        SelectedItem="{Binding ConnectedServer.SelectedService}"
+                        SelectionChanged="ServiceList_SelectionChanged"
+                        SelectionMode="Single">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <StackPanel Grid.Row="2" Orientation="Horizontal">
+                        <Button Width="100" Content="Create" Margin="0 0 5 0" />
+                        <Button Width="100" Content="Remove" />
+                    </StackPanel>
+                </Grid>
             </Grid>
 
             <!--  SERVICE CONTENT  -->
@@ -88,7 +101,7 @@
                             WordWrap="True" />
                     </Grid>
                 </TabItem>
-                <TabItem Header="{Binding EditorTabItemHeader}">
+                <TabItem Header="{Binding EditorTabItemHeader, FallbackValue='Editor'}">
                     <avalonedit:TextEditor
                         x:Name="RawTextEditor"
                         Background="{DynamicResource {x:Static adonis:Brushes.Layer1BackgroundBrush}}"
@@ -102,53 +115,6 @@
                                 Modifiers="Control" />
                         </avalonedit:TextEditor.InputBindings>
                     </avalonedit:TextEditor>
-                </TabItem>
-                <TabItem Header="Visualizer">
-                    <TabItem.InputBindings>
-                        <KeyBinding
-                            Key="S"
-                            Command="{Binding SaveVisualizedServiceCommand}"
-                            CommandParameter="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=adonisControls:AdonisWindow}}"
-                            Modifiers="Control" />
-                    </TabItem.InputBindings>
-                    <ScrollViewer>
-                        <ItemsControl ItemsSource="{Binding ConnectedServer.SelectedService.Sections}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel CanVerticallyScroll="True">
-                                        <TextBlock
-                                            Margin="0,7,0,7"
-                                            FontSize="15"
-                                            FontWeight="Bold"
-                                            Text="{Binding Name, StringFormat='[{0}]'}" />
-
-                                        <ItemsControl ItemsSource="{Binding Properties}">
-                                            <ItemsControl.ItemContainerStyle>
-                                                <Style TargetType="{x:Type ContentPresenter}">
-                                                    <Setter Property="Margin" Value="0,3,0,0" />
-                                                </Style>
-                                            </ItemsControl.ItemContainerStyle>
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate DataType="unitParser:SystemdProperty">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock
-                                                            Margin="0,0,7,0"
-                                                            IsEnabled="False"
-                                                            Text="{Binding Name, Mode=TwoWay}" />
-                                                        <TextBlock Text="=" />
-                                                        <TextBlock
-                                                            Margin="7,0,0,0"
-                                                            IsEnabled="False"
-                                                            Text="{Binding Value, Mode=TwoWay}" />
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </ScrollViewer>
                 </TabItem>
             </TabControl>
         </Grid>
