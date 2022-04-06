@@ -22,14 +22,6 @@ public class ServerViewModel : ViewModel
         set => SetProperty(ref _editorTabItemHeader, value);
     }
 
-    private string _visualizedTabItemHeader = "Visualized";
-    public string VisualizedTabItemHeader
-    {
-        get => _visualizedTabItemHeader;
-        set => SetProperty(ref _visualizedTabItemHeader, value);
-    }
-
-    public SaveVisualizedServiceCommand SaveVisualizedServiceCommand { get; set; }
     public SaveRawServiceCommand SaveRawServiceCommand { get; set; }
 
     private ConnectedServer _connectedServer;
@@ -56,7 +48,6 @@ public class ServerViewModel : ViewModel
     public ServerViewModel()
     {
         SaveRawServiceCommand = new SaveRawServiceCommand(this);
-        SaveVisualizedServiceCommand = new SaveVisualizedServiceCommand(this);
     }
 
     public async Task<List<Server>> LoadServersAsync()
