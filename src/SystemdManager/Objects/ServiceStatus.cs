@@ -25,10 +25,9 @@ public class ServiceStatus
             .Select(x =>
             {
                 var key = x[0].ToLower();
-                var value = x[1].ToLower();
                 var keyLastIndex = key.LastIndexOf(' ') + 1;
 
-                return new KeyValuePair<string, string>(key[keyLastIndex..], value);
+                return new KeyValuePair<string, string>(key[keyLastIndex..], x[1]);
             }).ToList();
 
         var activeEntry = GetEntry(entries, "active");
