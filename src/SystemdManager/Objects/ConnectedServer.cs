@@ -1,15 +1,14 @@
-﻿using Renci.SshNet;
-using Renci.SshNet.Sftp;
-
-using Serilog;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+
+using Renci.SshNet;
+using Renci.SshNet.Sftp;
+
+using Serilog;
 
 using SystemdManager.Ext;
 using SystemdManager.Framework;
@@ -48,15 +47,13 @@ public class ConnectedServer : ViewModel
         _sftpClient = new SftpClient(_sshClient.ConnectionInfo);
     }
 
-    // TODO: Add custom systemd directory(s) in the settings
-    // TODO: Add file watchers (if possible, if not, periodically check the file content)
     public async Task LoadServices()
     {
         Log.Information("Loading services...");
         var sw = new Stopwatch();
         sw.Start();
- 
-        // todo: maybe to do this with ssh? & multiple paths
+        
+        // TODO: Scan in multiple directories
         var serviceFiles = _sftpClient.ListDirectory("/etc/systemd/system").ToList();
         var processors = Environment.ProcessorCount;
         var services = new List<Service>();
@@ -144,7 +141,7 @@ public class ConnectedServer : ViewModel
         service.Status = status;
 
         stopwatch.Stop();
-        Log.Information("{Filename} took {time}ms to load!", name, stopwatch.ElapsedMilliseconds);
+        Log.Information("loading service {Filename} took {time}ms", name, stopwatch.ElapsedMilliseconds);
 
         return service;
     }
