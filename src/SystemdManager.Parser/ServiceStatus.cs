@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
-namespace SystemdManager.Objects;
-
+namespace SystemdManager.Parser;
 public class ServiceStatus
 {
 
-    private static readonly Regex DatetimeRegex 
+    private static readonly Regex DatetimeRegex
         = new(@"(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})", RegexOptions.Compiled);
 
     public bool IsActive { get; set; }
@@ -40,7 +36,7 @@ public class ServiceStatus
             return;
 
         RunningSince = GetRunningSince(activeEntry);
-        MemoryUsage = GetEntry(entries, "memory"); // TODO: Parsing this to ByteSize
+        MemoryUsage = GetEntry(entries, "memory").TrimEnd(); // TODO: Parsing this to ByteSize
         MainPid = int.Parse(GetEntry(entries, "main pid").Split(" ")[0]);
     }
 

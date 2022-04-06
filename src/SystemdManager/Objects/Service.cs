@@ -1,4 +1,6 @@
-﻿namespace SystemdManager.Objects;
+﻿using SystemdManager.Parser;
+
+namespace SystemdManager.Objects;
 
 public class Service
 {
