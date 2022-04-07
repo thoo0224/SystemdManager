@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 using Renci.SshNet;
@@ -12,7 +13,6 @@ using Serilog;
 
 using SystemdManager.Ext;
 using SystemdManager.Framework;
-using SystemdManager.Parser;
 
 namespace SystemdManager.Objects;
 
@@ -28,8 +28,8 @@ public class ConnectedServer : ViewModel
         set => SetProperty(ref _selectedService, value);
     }
 
-    private ObservableCollection<Service> _services = new();
-    public ObservableCollection<Service> Services
+    private List<Service> _services = new();
+    public List<Service> Services
     {
         get => _services;
         set => SetProperty(ref _services, value);
@@ -47,32 +47,28 @@ public class ConnectedServer : ViewModel
         _sftpClient = new SftpClient(_sshClient.ConnectionInfo);
     }
 
-    public async Task LoadServices()
+    public async Task LoadServicesAsync()
     {
         Log.Information("Loading services...");
         var sw = new Stopwatch();
         sw.Start();
-        
-        // TODO: Scan in multiple directories
+
         var serviceFiles = _sftpClient.ListDirectory("/etc/systemd/system").ToList();
-        var processors = Environment.ProcessorCount;
-        var services = new List<Service>();
+        var command = BuildCatCommand(serviceFiles.Where(x => x.Name.EndsWith(".service")).ToList());
+        var commandResult = _sshClient.RunCommand(command);
+        var output = commandResult.Result;
 
-        await serviceFiles.ForEachAsync(processors, file =>
+        Services = new List<Service>();
+        LoadServices(output);
+
+        await Services.ForEachAsync(20, service =>
         {
-            var service = LoadService(file);
-            if (service == null)
-            {
-                return;
-            }
-
-            services.Add(service);
+            service.LoadStatus(_sshClient);
         });
 
-        Services = new ObservableCollection<Service>(services);
         sw.Stop();
 
-        Log.Information("Successfully loaded {ServiceCount} in {Elapsed}", 
+        Log.Information("Successfully loaded {ServiceCount} in {Elapsed}",
             _services.Count, sw.Elapsed);
     }
 
@@ -80,7 +76,6 @@ public class ConnectedServer : ViewModel
     {
         Log.Information("Saving service: {ServiceName}",
             service.FullName);
-        _sftpClient.DeleteFile(service.FullName);
         _sftpClient.WriteAllText(service.FullName, content);
     }
 
@@ -110,40 +105,68 @@ public class ConnectedServer : ViewModel
 
     public void RefreshService(ref Service service)
     {
-        service = LoadService(service.Name, service.FullName);
+        service = LoadService(service.FullName);
     }
 
-    private Service LoadService(SftpFile file)
-        => LoadService(file.Name, file.FullName);
-
-    private Service LoadService(string name, string fullName)
+    private void LoadServices(string output)
     {
-        var stopwatch = new Stopwatch();
-        stopwatch.Start();
-
-        if (!fullName.EndsWith(".service"))
+        var span = output.AsSpan();
+        while (true)
         {
-            return null;
+            if (span.IsEmpty)
+                break;
+
+            var off = SftpFileStartHeaderSeparator.Length;
+            var startHeaderIdx = span.IndexOf(SftpFileStartHeaderSeparator, StringComparison.Ordinal) + off;
+            var endHeaderIdx = span.IndexOf(SftpFileEndHeaderSeparator, StringComparison.Ordinal) - off;
+            var header = span.Slice(startHeaderIdx, endHeaderIdx);
+
+            var fullNameIdx = header.IndexOf(":");
+            var nameIdx = header.IndexOf(":") + 1;
+            var fullName = header[..fullNameIdx].TrimStart();
+            var name = header[nameIdx..];
+
+            var fullHeaderEnd = endHeaderIdx + off + SftpFileEndHeaderSeparator.Length + 1;
+            var endFileIdx = span.IndexOf(SftpFileEndSeparator, StringComparison.Ordinal);
+            var service = new Service(name.ToString(), fullName.ToString(), span[fullHeaderEnd..endFileIdx].ToString());
+            Services.Add(service);
+
+            var actualEnd = endFileIdx + SftpFileEndSeparator.Length + 1;
+            span = span[actualEnd..];
         }
+    }
 
-        var command = _sshClient.RunCommand($"cat {fullName}");
-        var content = command.Result;
+    private Service LoadService(string path)
+    {
+        var commandResult = _sshClient.RunCommand($"cat {path}");
+        var content = commandResult.Result;
 
-        var service = new Service
-        {
-            FullName = fullName,
-            Name = name,
-            Content = content
-        };
-
-        var statusCommandResult = _sshClient.RunCommand($"systemctl -l -n 0 status {service.Name}");
-        var status = new ServiceStatus(statusCommandResult.Result);
-        service.Status = status;
-
-        stopwatch.Stop();
-        Log.Information("loading service {Filename} took {time}ms", name, stopwatch.ElapsedMilliseconds);
+        var service = new Service(path[path.LastIndexOf('/')..], path, content);
+        service.LoadStatus(_sshClient);
 
         return service;
+    }
+
+    private const string SftpFileEndSeparator = "SYSTEMD_MANAGER__END_OF_FILE__SYSTEMD_MANAGER";
+    private const string SftpFileStartHeaderSeparator = "SYSTEMD_MANAGER__START__HEADER";
+    private const string SftpFileEndHeaderSeparator = "SYSTEMD_MANAGER__END__HEADER";
+
+    private static string BuildCatCommand(IReadOnlyList<SftpFile> files)
+    {
+        var commandBuilder = new StringBuilder();
+        var numFiles = files.Count;
+        for (var i = 0; i < numFiles; i++)
+        {
+            var file = files[i];
+            commandBuilder.Append($"echo {SftpFileStartHeaderSeparator} {file.FullName}:{file.Name} {SftpFileEndHeaderSeparator} && cat {file.FullName} && echo {SftpFileEndSeparator}");
+
+            if (i < numFiles-1)
+            {
+                commandBuilder.Append(" && ");
+            }
+        }
+
+        return commandBuilder.ToString();
     }
 
 }

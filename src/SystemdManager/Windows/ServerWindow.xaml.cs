@@ -32,9 +32,9 @@ public partial class ServerWindow : AdonisWindow
         LoadAvalonHighlighter();
     }
 
-    public async Task LoadServices()
+    public Task LoadServices()
     {
-        await _serverView.ConnectedServer.LoadServices();
+        return _serverView.ConnectedServer.LoadServicesAsync();
     }
 
     private void Window_OnLoaded(object sender, RoutedEventArgs e)
