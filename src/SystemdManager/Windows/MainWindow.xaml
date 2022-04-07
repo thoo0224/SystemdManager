@@ -58,6 +58,7 @@
                         BorderThickness="0"
                         CanUserAddRows="False"
                         CanUserDeleteRows="False"
+                        CanUserReorderColumns="False"
                         ItemsSource="{Binding Servers}"
                         Loaded="ServerList_OnLoaded"
                         MouseDoubleClick="ServerListItem_OnDoubleClick"
@@ -67,26 +68,8 @@
                         SelectionMode="Single">
 
                         <DataGrid.Columns>
-                            <DataGridTemplateColumn
-                                Width="100"
-                                MinWidth="75"
-                                Header="Name">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate DataType="objects:Server">
-                                        <TextBlock Text="{Binding Name}" TextAlignment="Center" />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTemplateColumn
-                                Width="135"
-                                MinWidth="75"
-                                Header="Host">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate DataType="objects:Server">
-                                        <TextBlock Text="{Binding Host}" TextAlignment="Center" />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Width="100" MinWidth="75" Header="Name" Binding="{Binding Name}" />
+                            <DataGridTextColumn Width="135" MinWidth="75" Header="Host" Binding="{Binding Host}" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </Border>
