@@ -72,7 +72,7 @@ public class ConnectedServer : ViewModel
         Services = new ObservableCollection<Service>(services);
         sw.Stop();
 
-        Log.Information("Successfully loaded {ServiceCount} in {Elapsed}", 
+        Log.Information("Successfully loaded {ServiceCount} services in {Elapsed}", 
             _services.Count, sw.Elapsed);
     }
 
