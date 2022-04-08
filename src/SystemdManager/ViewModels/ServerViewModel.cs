@@ -52,7 +52,6 @@ public class ServerViewModel : ViewModel
 
     public async Task<List<Server>> LoadServersAsync()
     {
-        var path = ApplicationService.ApplicationView.ApplicationDataPath;
         var file = ApplicationService.ApplicationView.ServersFile;
         List<Server> servers;
         if (!File.Exists(file))
@@ -65,8 +64,6 @@ public class ServerViewModel : ViewModel
             servers = JsonSerializer.Deserialize<List<Server>>(content, App.JsonSerializerOptions);
         }
 
-        var serialized = JsonSerializer.Serialize(servers, App.JsonSerializerOptions);
-        await File.WriteAllTextAsync(file, serialized).ConfigureAwait(false);
         return servers;
     }
 
