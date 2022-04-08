@@ -53,7 +53,7 @@ public class ServerViewModel : ViewModel
     public async Task<List<Server>> LoadServersAsync()
     {
         var path = ApplicationService.ApplicationView.ApplicationDataPath;
-        var file = Path.Combine(path, "servers.json");
+        var file = ApplicationService.ApplicationView.ServersFile;
         List<Server> servers;
         if (!File.Exists(file))
         {
